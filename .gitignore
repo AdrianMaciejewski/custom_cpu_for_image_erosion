@@ -53,3 +53,26 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# IDEs / editors
+.idea/
+*.iml
+.vscode/
+
+# sbt / Scala
+target/
+project/
+lib_managed/
+src_managed/
+out/
+
+# Tooling / build caches
+.bsp/
+.metals/
+.ammonite/
+.cache/
+.ivy2/
+.history/
+
+# custom folders
+test_run_dir/
