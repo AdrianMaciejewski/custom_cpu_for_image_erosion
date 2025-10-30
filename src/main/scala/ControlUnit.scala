@@ -18,7 +18,15 @@ class ControlUnit extends Module {
 
   //Implement this module here
   switch(io.opcode) {
-    is(0.U){} // No opcode
+    is(0.U | 8.U | 12.U | 13.U | 14.U) { // in case of opcode with no related signals
+      io.aluOp := AluOp.add // should probably add a AluOp.null
+      io.aluUsingImm := false.B
+      io.stop := false.B
+      io.branch := false.B
+      io.dataReadEnable := false.B
+      io.dataWriteEnable := false.B
+      io.registerWrite := true.B
+    } // No opcode
 
     is(1.U){ // Addition
       io.aluOp := AluOp.add
@@ -27,7 +35,8 @@ class ControlUnit extends Module {
       io.branch := false.B
       io.dataReadEnable := false.B
       io.dataWriteEnable := false.B
-      io.registerWrite := true.B}
+      io.registerWrite := true.B
+    }
 
 
     is(2.U){ // Subtraction
@@ -37,7 +46,8 @@ class ControlUnit extends Module {
       io.branch := false.B
       io.dataReadEnable := false.B
       io.dataWriteEnable := false.B
-      io.registerWrite := true.B}
+      io.registerWrite := true.B
+    }
 
 
     is(3.U) { // Immediate Addition (addition with a number rather than a register)
@@ -96,7 +106,7 @@ class ControlUnit extends Module {
       io.registerWrite := false.B
     }
 
-    is(10.U){// Branch not Equal
+    is(10.U){ // Branch not Equal
       io.aluOp := AluOp.neq
       io.aluUsingImm := false.B
       io.stop := false.B
@@ -118,7 +128,15 @@ class ControlUnit extends Module {
     }
 
 
-    is(15.U){io.stop := true.B} // Exit
+    is(15.U){  // Exit
+      io.aluOp := AluOp.add
+      io.aluUsingImm := false.B
+      io.stop := true.B
+      io.branch := false.B
+      io.dataReadEnable := false.B
+      io.dataWriteEnable := false.B
+      io.registerWrite := false.B
+    }
 
   }
 
