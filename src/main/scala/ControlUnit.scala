@@ -16,130 +16,27 @@ class ControlUnit extends Module {
 
   })
 
-  //Implement this module here
+  // default
+
+  io.aluOp           := AluOp.add
+  io.aluUsingImm     := false.B
+  io.stop            := false.B
+  io.branch          := false.B
+  io.dataReadEnable  := false.B
+  io.dataWriteEnable := false.B
+  io.registerWrite   := false.B
+
   switch(io.opcode) {
-    is(0.U | 8.U | 12.U | 13.U | 14.U) { // in case of opcode with no related signals
-      io.aluOp := AluOp.add // should probably add a AluOp.null
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := false.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := true.B
-    } // No opcode
-
-    is(1.U){ // Addition
-      io.aluOp := AluOp.add
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := false.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := true.B
-    }
-
-
-    is(2.U){ // Subtraction
-      io.aluOp := AluOp.sub
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := false.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := true.B
-    }
-
-
-    is(3.U) { // Immediate Addition (addition with a number rather than a register)
-      io.aluOp := AluOp.add
-      io.aluUsingImm := true.B
-      io.stop := false.B
-      io.branch := false.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := true.B
-    }
-
-    is(4.U) { // Immediate Multiplication
-      io.aluOp := AluOp.mul
-      io.aluUsingImm := true.B
-      io.stop := false.B
-      io.branch := false.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := true.B
-    }
-
-    is(5.U){ // Save Data
-      io.aluOp := AluOp.add
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := false.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := true.B
-      io.registerWrite := false.B
-
-    }
-
-
-    is(6.U) { // Load Data
-      io.aluOp := AluOp.add
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := false.B
-      io.dataReadEnable := true.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := true.B
-    }
-
-    is(8.U){
-    } // Unconditional Jump
-
-
-    is(9.U) { // Branch if Equal
-      io.aluOp := AluOp.eql
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := true.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := false.B
-    }
-
-    is(10.U){ // Branch not Equal
-      io.aluOp := AluOp.neq
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := true.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := false.B
-      }
-
-
-    is(11.U){ // Greater Than or Equal
-      io.aluOp := AluOp.geq
-      io.aluUsingImm := false.B
-      io.stop := false.B
-      io.branch := true.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := false.B
-    }
-
-
-    is(15.U){  // Exit
-      io.aluOp := AluOp.add
-      io.aluUsingImm := false.B
-      io.stop := true.B
-      io.branch := false.B
-      io.dataReadEnable := false.B
-      io.dataWriteEnable := false.B
-      io.registerWrite := false.B
-    }
-
+    is(1.U)  { io.aluOp := AluOp.add; io.registerWrite := true.B }       // add
+    is(2.U)  { io.aluOp := AluOp.sub; io.registerWrite := true.B }       // sub
+    is(3.U)  { io.aluOp := AluOp.add; io.aluUsingImm := true.B; io.registerWrite := true.B } // addi
+    is(4.U)  { io.aluOp := AluOp.mul; io.aluUsingImm := true.B; io.registerWrite := true.B } // muli
+    is(5.U)  { io.dataWriteEnable := true.B }                            // store
+    is(6.U)  { io.dataReadEnable := true.B; io.registerWrite := true.B } // load
+    is(9.U)  { io.aluOp := AluOp.eql; io.branch := true.B }              // beq
+    is(10.U) { io.aluOp := AluOp.neq; io.branch := true.B }              // bne
+    is(11.U) { io.aluOp := AluOp.geq; io.branch := true.B }              // bge
+    is(15.U) { io.stop := true.B }                                       // exit
   }
-
-
 
 }
