@@ -28,10 +28,12 @@ class CPUTop extends Module {
   val alu = Module(new ALU())
 
   //Connecting the modules
+  io.done := controlUnit.io.stop
 
-  programCounter.io.stop := controlUnit.io.done
-  programCounter.io.jump := controlUnit.io.jump && alu.io.isBooleanOpTrue
-  programCoutner.io.programCounterJump := programMemory.io.instructionRead(15, 0)
+  programCounter.io.run := io.run
+  programCounter.io.stop := controlUnit.io.stop
+  programCounter.io.jump := controlUnit.io.branch && alu.io.isBooleanOpTrue
+  programCounter.io.programCounterJump := programMemory.io.instructionRead(15, 0)
 
   programMemory.io.address := programCounter.io.programCounter
 
@@ -40,7 +42,7 @@ class CPUTop extends Module {
   registerFile.io.aSel := programMemory.io.instructionRead(19, 16)
   registerFile.io.bSel := programMemory.io.instructionRead(23, 20)
   registerFile.io.writeSel := programMemory.io.instructionRead(27, 24)
-  registerFile.io.writeEnable := controlUnit.io.writeEnable
+  registerFile.io.writeEnable := controlUnit.io.dataWriteEnable
   registerFile.io.writeData := Mux(controlUnit.io.dataReadEnable, dataMemory.io.dataRead, alu.io.result)
 
   alu.io.val1 := registerFile.io.a
@@ -50,7 +52,7 @@ class CPUTop extends Module {
   alu.io.opCode := controlUnit.io.aluOp
 
   dataMemory.io.address := registerFile.io.a
-  dataMemory.io.writeEnable := controlUnit.io.writeEnable
+  dataMemory.io.writeEnable := controlUnit.io.dataWriteEnable
   dataMemory.io.dataWrite := registerFile.io.b
 
 
