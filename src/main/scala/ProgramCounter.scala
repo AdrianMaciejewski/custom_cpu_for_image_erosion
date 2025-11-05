@@ -12,7 +12,7 @@ class ProgramCounter extends Module {
 
   val reg = RegInit(0.U(16.W))
 
-  reg := Mux(~io.run || io.stop, reg, Mux(io.jump, io.programCounterJump, reg + 1.U))
+  reg := Mux((!io.run)  || io.stop, reg, Mux(io.jump, io.programCounterJump, reg + 1.U))
 
   io.programCounter := reg
 
