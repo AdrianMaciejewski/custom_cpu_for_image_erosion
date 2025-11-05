@@ -3,8 +3,8 @@ isa = {'ADD': '0001',
         'SUB': '0010',
         'ADDI': '0011',
         'MULI': '0100',
-        'SD': '0101',
-        'LD': '0110',
+        'SW': '0101',
+        'LW': '0110',
         'BEQ': '1001',
         'BNE': '1010',
         'BGE': '1011',
@@ -27,8 +27,8 @@ for i in range(len(content)):
 
 #asemble instructions
 for instruction in content:
-    opcode = instruction.strip().split(' ')[0].upper()
-    operands = instruction.strip().split(' ')[1:]
+    opcode = instruction.strip().split()[0].upper()
+    operands = instruction.strip().split()[1:]
 
     if opcode in ['ADD', 'SUB']: #R-type
         rd = format(int(operands[0][1:]), '04b')
@@ -42,16 +42,27 @@ for instruction in content:
         imm = format(int(operands[2]), '016b')
         mc = isa[opcode] + rd + rs1 + '0000' + imm
         content[content.index(instruction)] = mc
-    elif opcode in ['SD', 'LD']: #D-type
-        rd = format(int(operands[0][1:]), '04b')
-        rs1 = format(int(operands[1][1:]), '04b')
-        imm = format(int(operands[2]), '016b')
-        if opcode == 'SD':
-            rd = '0000'  # for SD, rd is not used
-        else:
-            rs1 = '0000'  # for LD, rs1 is not used
-        mc = isa[opcode] + rd + rs1 + '0000' + imm
-        content[content.index(instruction)] = mc
+
+    elif opcode == 'SW':  # sw xS, xA   -> Mem[ xA ] = xS
+        # field mapping: opcode | rd(ignored=0000) | rb=store-src | ra=addr | imm(0)
+        ra = format(int(operands[0][1:]), '04b')   # xS (the value to store)
+        rb = format(int(operands[1][1:]), '04b')   # xA (address register)
+        rd = '0000'                                # unused for SW
+        mc = isa[opcode] + rd + ra + rb + ('0' * 16)
+        content[i] = mc
+
+    elif opcode == 'LW':  # lw xD, xA   -> xD = Mem[ xA ]
+        # field mapping: opcode | rd=dest | rb(ignored=0000) | ra=addr | imm(0)
+        rd = format(int(operands[0][1:]), '04b')   # xD (destination)
+        ra = format(int(operands[1][1:]), '04b')   # xA (address register)
+        rb = '0000'                                # ignored for LW
+        mc = isa[opcode] + rd + ra + rb + ('0' * 16)
+        content[i] = mc
+
+
+
+
+
     elif opcode in ['BEQ', 'BNE', 'BGE']: #B-type
         rs1 = format(int(operands[0][1:]), '04b')
         rs2 = format(int(operands[1][1:]), '04b')
@@ -67,3 +78,5 @@ with open("machine_code.txt", 'w') as mc_file:
     for line in content[:-1]:
         mc_file.write("\t\t"+r'"h'+hex(int(line, 2))[2:]+r'".U(32.W),'+'\n')
     mc_file.write("\t\t"+r'"h'+hex(int(content[-1], 2))[2:]+r'".U(32.W),'+'\n\t)\n}')
+
+    print("success!")
