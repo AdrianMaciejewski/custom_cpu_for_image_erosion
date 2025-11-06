@@ -39,10 +39,10 @@ class CPUTop extends Module {
 
   controlUnit.io.opcode := programMemory.io.instructionRead(31, 28)
 
-  registerFile.io.aSel := programMemory.io.instructionRead(19, 16)
-  registerFile.io.bSel := programMemory.io.instructionRead(23, 20)
+  registerFile.io.aSel := programMemory.io.instructionRead(23, 20)
+  registerFile.io.bSel := programMemory.io.instructionRead(19, 16)
   registerFile.io.writeSel := programMemory.io.instructionRead(27, 24)
-  registerFile.io.writeEnable := controlUnit.io.dataWriteEnable
+  registerFile.io.writeEnable := controlUnit.io.registerWrite
   registerFile.io.writeData := Mux(controlUnit.io.dataReadEnable, dataMemory.io.dataRead, alu.io.result)
 
   alu.io.val1 := registerFile.io.a
