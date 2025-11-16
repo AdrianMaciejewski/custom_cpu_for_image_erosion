@@ -12,7 +12,7 @@ beq x0, x0, 14
 7:
 ADDI x2, x2, 1	#increment y
 ADD x1, x0, x0	#reset x
-bge x2, x11, 11 #end program if y>=20
+bge x11, x2, 11 #end program if y>=20
 END x0, x0, x0
 beq x0, x0, 14	#else do another iteration
 
@@ -42,10 +42,10 @@ beq x0, x0, 12	#continue
 
 ### Processing Inner Pixel
 lw x5, x6	#load input image pixel
-bne x5, x0, 29
+bne x5, x0, 28
 sw x0, x3	#if input pixel is black, save output pixel as black
 beq x0, x0, 12	#continue
-29:
+28:
 
 #else (this can definitely be optimized)
 #if pixel should be eroded
@@ -53,33 +53,33 @@ SUB x6, x1, x12	#x-1
 MULI x5, x2, 20	#y*20
 ADD x6, x5, x6	#(x-1)+y*20
 lw x5, x6
-beq x5, x0, 51
+beq x5, x0, 49
 #repeat
 ADD x6, x1, x12	#x+1
 MULI x5, x2, 20	#y*20
 ADD x6, x5, x6	#(x+1)+y*20
 lw x5, x6
-beq x5, x0, 51
+beq x5, x0, 49
 #repeat
 SUB x6, x2, x12	#y-1
 MULI x5, x6, 20	#(y-1)*20
 ADD x6, x5, x1	#x+(y-1)*20
 lw x5, x6
-beq x5, x0, 51
+beq x5, x0, 49
 #repeat
 ADD x6, x2, x12	#y+1
 MULI x5, x6, 20	#(y+1)*20
 ADD x6, x5, x1	#x+(y+1)*20
 lw x5, x6
-beq x5, x0, 51
+beq x5, x0, 49
 
-#else do not 51
-beq x0, x0, 53
+#else do not 49
+beq x0, x0, 51
 
-51:
+49:
 sw x0, x3
 beq x0, x0, 12
 
-53:
+51:
 sw x13, x3
 beq x0, x0, 12

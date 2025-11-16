@@ -3,8 +3,8 @@ isa = {'ADD': '0001',
         'SUB': '0010',
         'ADDI': '0011',
         'MULI': '0100',
-        'SD': '0101',
-        'LD': '0110',
+        'SW': '0101',
+        'LW': '0110',
         'BEQ': '1001',
         'BNE': '1010',
         'BGE': '1011',
@@ -42,15 +42,15 @@ for instruction in content:
         imm = format(int(operands[2]), '016b')
         mc = isa[opcode] + rd + rs1 + '0000' + imm
         content[content.index(instruction)] = mc
-    elif opcode in ['SD', 'LD']: #D-type
-        rd = format(int(operands[0][1:]), '04b')
+    elif opcode in ['SW', 'LW']: #D-type
         rs1 = format(int(operands[1][1:]), '04b')
-        imm = format(int(operands[2]), '016b')
-        if opcode == 'SD':
-            rd = '0000'  # for SD, rd is not used
+        if opcode == 'SW':
+            rs2 = format(int(operands[0][1:]), '04b')
+            rd = '0000'
         else:
-            rs1 = '0000'  # for LD, rs1 is not used
-        mc = isa[opcode] + rd + rs1 + '0000' + imm
+            rd = format(int(operands[0][1:]), '04b')
+            rs2 = '0000'
+        mc = isa[opcode] + rd + rs1 + rs2 + '0000000000000000'
         content[content.index(instruction)] = mc
     elif opcode in ['BEQ', 'BNE', 'BGE']: #B-type
         rs1 = format(int(operands[0][1:]), '04b')
